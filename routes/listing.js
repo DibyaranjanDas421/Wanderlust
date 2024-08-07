@@ -273,6 +273,7 @@ const express = require('express');
 const router = express.Router();
 
 const Listing = require('../models/listing');
+const Review = require('../models/review.js');
 const wrapAsync = require("../utils/wrapAsync");
 const ExpressError = require("../utils/ExpressError");
 const { listingSchema, reviewSchema } = require('../schema');
@@ -301,9 +302,30 @@ router.post("/", isLoggedin, validateListing, wrapAsync(async (req, res) => {
 }));
 
 // show route
+// router.get("/:id", wrapAsync(async (req, res) => {
+//     const { id } = req.params;
+//     const listing = await Listing.findById(id)
+//     .populate({path:'reviews',
+//         path:"author"})
+//         .populate('owner');
+//     if (!listing) {
+//         req.flash("error", "Listing you requested for does not exist!");
+//         return res.redirect('/listings');
+//     }
+//     res.render("listings/show", { listing });
+// }));
+// show route
 router.get("/:id", wrapAsync(async (req, res) => {
     const { id } = req.params;
-    const listing = await Listing.findById(id).populate('reviews').populate('owner');
+    const listing = await Listing.findById(id)
+        .populate({
+            path: 'reviews',
+            populate: {
+                path: 'author',
+                options: { strictPopulate: false }
+            }
+        })
+        .populate('owner');
     if (!listing) {
         req.flash("error", "Listing you requested for does not exist!");
         return res.redirect('/listings');
