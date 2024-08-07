@@ -7,8 +7,9 @@ const Listing = require('../models/listing');
 
 const wrapAsync = require("../utils/wrapAsync.js");
 const ExpressError = require("../utils/ExpressError.js");
-const {reviewSchema} = require('../schema.js');
+
 const Review = require('../models/review.js');
+const {validateReview}=require('../middleware.js');
 
 
 
@@ -19,15 +20,6 @@ const Review = require('../models/review.js');
 
 
 
-const validateReview = (req, res, next) => {
-    const { error } = reviewSchema.validate(req.body);
-    if (error) {
-        const errMsg = error.details.map(el => el.message).join(",");
-        throw new ExpressError(404, errMsg);
-    } else {
-        next();
-    }
-};
 
 
 
