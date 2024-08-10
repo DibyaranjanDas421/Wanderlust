@@ -280,14 +280,22 @@ const { listingSchema, reviewSchema } = require('../schema');
 const { isLoggedin, isOwner,validateListing } = require('../middleware');  // Correct import
 const listingController=require('../controllers/listings.js');
 
+const multer  = require('multer');
+const { storage } = require('../cloudConfig.js');
+const upload = multer({ storage }); // Correct initialization of multer with storage
 
 
 
 
-router.
-route('/')
-.get( wrapAsync(listingController.index))
-.post(isLoggedin, validateListing, wrapAsync(listingController.createListinng));
+router.route('/')
+  .get(wrapAsync(listingController.index))
+  .post(
+    isLoggedin,
+    
+    upload.single('listing[image]'), wrapAsync(listingController.createListinng)
+      
+  );
+
 
 // new
 router.get("/new", isLoggedin,listingController.rendernewForm
@@ -296,8 +304,14 @@ router.get("/new", isLoggedin,listingController.rendernewForm
 router.
 route('/:id')
 .get( wrapAsync(listingController.showListing))
-.put( isLoggedin, isOwner, validateListing, wrapAsync(listingController.updateListing))
-.delete( isLoggedin, isOwner, wrapAsync(listingController.destroyListing))
+.put( isLoggedin,
+   isOwner,
+   upload.single('listing[image]'),
+    validateListing,
+     wrapAsync(listingController.updateListing))
+.delete( isLoggedin,
+   isOwner,
+  wrapAsync(listingController.destroyListing));
 
 
 

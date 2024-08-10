@@ -1,5 +1,19 @@
 <% layout("/layouts/boilerplate") %>
 <body>
+  <script>
+    // Retrieve the map token
+    const mapToken = "<%= process.env.MAP_TOKEN.trim() %>";
+    
+    // Parse the coordinates from a string to an array
+    const listing = <%- JSON.stringify(listing) %>; 
+
+    // Log the listing object to the console for debugging
+    console.log(listing);
+  </script>
+</body>
+
+ 
+  
 
     <div class="row mt-3">
         <div class="col-8 offset-3">
@@ -7,7 +21,7 @@
             </div>
     <div class="card col-6 offset-3 show-card listing-card">
         
-        <img src="<%=listing.image %>" class="card-img-top show-img" alt="listing_image  ">
+        <img src="<%=listing.image.url %>" class="card-img-top show-img" alt="listing_image  ">
         <div class="card-body">
           <p class="card-text">
             
@@ -37,8 +51,9 @@
 <% } %>
 
 <div class="col-8 offset-3 mb-3">
-  <hr>
+ 
   <% if(currUser) { %>
+    <hr>
   <h4>Leave a review</h4>
   <form action="/listings/<%= listing._id %>/reviews" method="post"  novalidate class="needs-validation">
 
@@ -72,10 +87,14 @@
     </div>
     <button class="btn btn-outline-dark">Submit</button>
   </form>
-  <% } %>
   <hr>
- <p><b>All reviews</b></p>
+
+  <% } %>
+
+  <% if(listing.reviews.length > 0) { %>
+ 
   <div class="row">
+    <p><b>All reviews</b></p>
     <% for(review of listing.reviews) { %>
       <div class="card col-5 ms-3  mb-3">
         <div class="card-body">
@@ -91,11 +110,19 @@
       <form class="mb-3 ms-3" action="/listings/<%= listing._id%>/reviews/<%= review._id %>?_method=DELETE"  method="post">
         <button class="btn btn-sm btn-dark">Delete</button>
      </form>
-    
+     <% } %>
       </div>
       <% } %>
+    
   </div>
-</div>
+  <div class="col-8 offset-3 mb-3">
+    <h3>Where you’ll be</h3>
+    <div id="map"></div>
+  </div>
+ 
+  
 
+</div>
+<script src="/js/map.js"></script>
 </body>
-</html>
+
